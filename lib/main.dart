@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Future<List<Photo>> fetchPhotos(http.Client client) async {
   final response = await client.get('https://scrapbox.io/api/pages/MECHKEYS');
@@ -123,9 +124,12 @@ class PhotosListState extends State<PhotosList> {
               ),
             ),
           ),
-          child: CachedNetworkImage(
-            imageUrl: photos[index].imgUrl,
-            fit: BoxFit.cover,
+          child: GestureDetector(
+            onTap: () { launch(photos[index].imgUrl); },
+            child: CachedNetworkImage(
+              imageUrl: photos[index].imgUrl,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       },
