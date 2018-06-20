@@ -23,14 +23,16 @@ class Photo {
   final String id;
   final String title;
   final String imgUrl;
+  bool isFavorite;
 
-  Photo({this.id, this.title, this.imgUrl});
+  Photo({this.id, this.title, this.imgUrl, this.isFavorite});
 
   factory Photo.fromJson(Map<String, dynamic> json) {
     return Photo(
       id: json['id'] as String,
       title: json['title'] as String,
       imgUrl: json['image'] as String,
+      isFavorite: false,
     );
   }
 }
@@ -74,10 +76,19 @@ class KeyphotterPage extends StatelessWidget {
   }
 }
 
-class PhotosList extends StatelessWidget {
+class PhotosList extends StatefulWidget {
+  PhotosList({Key key, this.photos}) : super(key: key);
+
   final List<Photo> photos;
 
-  PhotosList({Key key, this.photos}) : super(key: key);
+  @override
+  PhotosListState createState() => PhotosListState(photos: photos);
+}
+
+class PhotosListState extends State<PhotosList> {
+  PhotosListState({Key key, this.photos});
+
+  final List<Photo> photos;
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +102,25 @@ class PhotosList extends StatelessWidget {
       itemCount: photos.length,
       itemBuilder: (context, index) {
         return GridTile(
-          footer: GridTileBar(
-            backgroundColor: Colors.black45,
-            title: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(photos[index].title),
+          footer: GestureDetector(
+            onTap: () {
+              setState(() {
+                photos[index].isFavorite = !photos[index].isFavorite;
+              });
+            },
+            child: GridTileBar(
+              backgroundColor: Colors.black45,
+              title: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(photos[index].title),
+              ),
+              leading: Icon(
+                photos[index].isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: photos[index].isFavorite ? Colors.red : null,
+              ),
             ),
           ),
           child: CachedNetworkImage(
